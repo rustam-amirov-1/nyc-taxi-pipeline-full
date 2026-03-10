@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: fct_trips
+    description: "Gold layer — final fact table of NYC Taxi trips ready for analysis."
+    columns:
+      - name: vendor_id
+        description: "Taxi vendor code. 1 = Creative Mobile Technologies, 2 = VeriFone Inc."
+      - name: ratecode_id
+        description: "Rate code. 1=Standard, 2=JFK, 3=Newark, 4=Nassau/Westchester, 5=Negotiated."
+      - name: pickup_datetime
+        description: "Timestamp when the passenger was picked up."
+      - name: dropoff_datetime
+        description: "Timestamp when the passenger was dropped off."
+      - name: passenger_count
+        description: "Number of passengers in the trip."
+      - name: trip_distance
+        description: "Trip distance in miles."
+      - name: total_amount
+        description: "Total amount charged to the passenger."
+      - name: tip_amount
+        description: "Tip amount given to the driver."
+      - name: fare_amount
+        description: "Base fare amount calculated by the meter."
+      - name: payment_type
+        description: "Payment method. 1=Credit Card, 2=Cash, 3=No Charge, 4=Dispute, 5=Unknown."
+      - name: trip_duration_minutes
+        description: "Duration of the trip in minutes."
+      - name: time_of_day
+        description: "Time of day based on pickup time. morning=6-11, afternoon=12-17, evening=18-22, night=other."
+      - name: trip_type
+        description: "Trip distance category. short_trip=≤3 miles, medium_trip=≤8 miles, long_trip=>8 miles."
+

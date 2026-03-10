@@ -1,0 +1,49 @@
+# Data files
+data/
+
+# JDBC drivers
+drivers/
+
+# Logs
+logs/
+airflow/logs/
+dbt/logs/
+dbt/taxi_pipeline/logs/
+
+# dbt target (compiled files)
+dbt/taxi_pipeline/target/
+
+# dbt .user.yml (personal config)
+dbt/taxi_pipeline/.user.yml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+profiles.yml
+.user.yml
+
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Airflow
+airflow.cfg
+airflow.db
+airflow/dags/__pycache__/

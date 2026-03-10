@@ -1,0 +1,108 @@
+version: 2
+
+seeds:
+  - name: dim_vendor
+    description: >
+      Dimension table for taxi vendors. Contains the mapping between vendor 
+      codes and their full company names. Used to enrich fact tables with 
+      human-readable vendor information in downstream analytics.
+    columns:
+      - name: vendor_id
+        description: >
+          Unique identifier for the taxi vendor as reported by the TLC. 
+          1 = Creative Mobile Technologies, 2 = VeriFone Inc.
+      - name: vendor_name
+        description: >
+          Full legal name of the taxi technology vendor that provided 
+          the E-Dispatch system for the trip.
+
+  - name: dim_rate
+    description: >
+      Dimension table for rate codes. Contains the mapping between rate 
+      code numbers and their descriptions. Rate codes determine the pricing 
+      structure applied to each trip.
+    columns:
+      - name: ratecode_id
+        description: >
+          Unique identifier for the rate code applied at the end of the trip.
+          1 = Standard Rate, 2 = JFK, 3 = Newark, 4 = Nassau or Westchester,
+          5 = Negotiated Fare.
+      - name: rate_description
+        description: >
+          Human-readable description of the rate code. Used in reports and 
+          dashboards to replace numeric codes with meaningful labels.
+
+models:
+  - name: mart_payment_breakdown
+    description: >
+      Gold layer analytical mart that aggregates NYC Taxi trip data by payment 
+      type. Provides a breakdown of trip volume, revenue share, and tipping 
+      behavior for each payment method. This mart is used to understand customer 
+      payment preferences and revenue distribution across payment channels.
+      Built on top of fct_trips.
+    columns:
+      - name: payment_type
+        description: >
+          Numeric code representing the payment method used for the trip.
+          1=Credit Card, 2=Cash, 3=No Charge, 4=Dispute, 5=Unknown, 6=Voided Trip.
+      - name: payment_label
+        description: >
+          Human-readable label derived from the payment_type code. 
+          Provides a descriptive name for each payment method for use 
+          in dashboards and reports.
+      - name: total_trips
+        description: >
+          Total number of trips completed using this payment method. 
+          Used to measure the popularity and volume of each payment channel.
+      - name: pct_of_trips
+        description: >
+          Percentage share of this payment type out of all trips. 
+          Calculated as (count of this payment type / total trips) * 100. 
+          Rounded to 2 decimal places.
+      - name: total_revenue
+        description: >
+          Sum of total_amount for all trips using this payment method. 
+          Represents the gross revenue generated through each payment channel.
+      - name: avg_tip
+        description: >
+          Average tip amount given by passengers using this payment method. 
+          Useful for comparing tipping behavior between credit card and cash payments.
+
+  - name: mart_monthly_summary
+    description: >
+      Gold layer analytical mart that summarizes NYC Taxi trip activity on a 
+      monthly basis, broken down by vendor and rate code. Provides key metrics 
+      such as ride volume, average fare, and average distance for each 
+      vendor-rate-month combination. This mart is used for trend analysis, 
+      vendor performance monitoring, and pricing strategy evaluation.
+      Built on top of fct_trips, dim_vendor, and dim_rate.
+    columns:
+      - name: ride_month
+        description: >
+          The month in which the trips occurred, truncated to the first day 
+          of the month using date_trunc. Used as the primary time dimension 
+          for monthly trend analysis.
+      - name: vendor_name
+        description: >
+          Full name of the taxi vendor enriched from dim_vendor. 
+          Allows comparison of trip volume and revenue between 
+          Creative Mobile Technologies and VeriFone Inc.
+      - name: rate_description
+        description: >
+          Human-readable description of the rate code enriched from dim_rate. 
+          Allows analysis of trip patterns across different pricing tiers 
+          such as Standard Rate, JFK, Newark, and Negotiated Fare.
+      - name: ride_count
+        description: >
+          Total number of trips for the given month, vendor, and rate code 
+          combination. Primary volume metric for trend and performance analysis.
+      - name: avg_total_amount
+        description: >
+          Average total fare charged per trip for the given month, vendor, 
+          and rate code. Rounded to 2 decimal places. Used to monitor 
+          pricing trends and detect anomalies in fare amounts.
+      - name: avg_trip_distance
+        description: >
+          Average trip distance in miles for the given month, vendor, 
+          and rate code. Rounded to 2 decimal places. Used to understand 
+          trip length patterns and correlate with fare amounts.
