@@ -3,6 +3,10 @@ from airflow.operators.empty import EmptyOperator
 from airflow.operators.bash import BashOperator
 from airflow.utils.trigger_rule import TriggerRule
 from datetime import datetime
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+from pyspark.sql.types import IntegerType, TimestampType, DoubleType
+from dotenv import load_dotenv
 
 bronze_dataset = Dataset("nyc-taxi-pipeline/bronze_done")
 silver_dataset = Dataset("nyc-taxi-pipeline/silver_done")
@@ -41,6 +45,10 @@ with DAG(
         ),
     )
 
+    spark_stg_trips = BashOperator(
+    task_id="spark_stg_trips",
+    bash_command="python /opt/airflow/dags/scripts/transform_trips.py",)
+
     dbt_test_silver = BashOperator(
         task_id="dbt_test_silver",
         bash_command=(
@@ -49,7 +57,7 @@ with DAG(
             f"--project-dir {DBT_PROJECT_DIR} "
             f"--select stg_trips stg_payments"
         ),
-        trigger_rule=TriggerRule.ALL_SUCCESS,
+        trigger_rule=TriggerRule.ALL_DONE,
     )
 
     end = EmptyOperator(
@@ -58,4 +66,4 @@ with DAG(
         trigger_rule=TriggerRule.ALL_SUCCESS,
     )
 
-    start >> [dbt_stg_trips, dbt_stg_payments] >> dbt_test_silver >> end
+    start >> [dbt_stg_trips, dbt_stg_payments,spark_stg_trips] >> dbt_test_silver >> end
