@@ -16,5 +16,6 @@ SELECT
     t.payment_type,
     t.trip_duration_minutes,
     t.time_of_day,
-    t.trip_type
+    t.trip_type,
+    t.pickup_location_id
 FROM {{ ref('stg_trips') }} t

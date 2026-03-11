@@ -7,43 +7,5 @@ sources:
     description: "Bronze layer — raw NYC Taxi data loaded from CSV."
     tables:
       - name: taxi_trips
-        description: "Raw NYC Yellow Taxi trip records (1000 rows sample)."
-        columns:
-          - name: vendor_id
-            description: "Taxi vendor identifier."
-          - name: tpep_pickup_datetime
-            description: "Trip pickup timestamp (raw VARCHAR)."
-          - name: tpep_dropoff_datetime
-            description: "Trip dropoff timestamp (raw VARCHAR)."
-          - name: passenger_count
-            description: "Number of passengers."
-          - name: trip_distance
-            description: "Distance of the trip in miles."
-          - name: pickup_longitude
-            description: "Pickup longitude coordinate."
-          - name: pickup_latitude
-            description: "Pickup latitude coordinate."
-          - name: ratecode_id
-            description: "Rate code for the trip."
-          - name: store_and_fwd_flag
-            description: "Store and forward flag."
-          - name: dropoff_longitude
-            description: "Dropoff longitude coordinate."
-          - name: dropoff_latitude
-            description: "Dropoff latitude coordinate."
-          - name: payment_type
-            description: "Payment method code."
-          - name: fare_amount
-            description: "Base fare amount."
-          - name: extra
-            description: "Extra charges."
-          - name: mta_tax
-            description: "MTA tax."
-          - name: tip_amount
-            description: "Tip amount."
-          - name: tolls_amount
-            description: "Tolls amount."
-          - name: improvement_surcharge
-            description: "Improvement surcharge."
-          - name: total_amount
-            description: "Total fare charged."
+        
+        

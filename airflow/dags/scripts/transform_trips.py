@@ -42,6 +42,9 @@ def transform(spark):
         .filter(F.col("trip_distance") > 0)
         .filter(F.col("total_amount") > 0)
         .filter(F.col("dropoff_datetime") > F.col("pickup_datetime"))
+        .filter(F.col("payment_type").isin(1, 2, 3, 4))
+        .filter(F.col("pickup_latitude").between(40.5, 40.9))
+        .filter(F.col("pickup_longitude").between(-74.3, -73.7))
         .select(
             "vendor_id", "ratecode_id",
             "pickup_datetime", "dropoff_datetime",

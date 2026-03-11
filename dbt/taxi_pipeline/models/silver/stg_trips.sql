@@ -52,7 +52,21 @@ cleaned AS (
             WHEN EXTRACT(HOUR FROM tpep_pickup_datetime::TIMESTAMP) BETWEEN 12 AND 17 THEN 'afternoon'
             WHEN EXTRACT(HOUR FROM tpep_pickup_datetime::TIMESTAMP) BETWEEN 18 AND 22 THEN 'evening'
             ELSE 'night'
-        END                                            AS time_of_day
+        END                                            AS time_of_day,
+
+        -- Derived: pickup location zone
+        CASE
+            WHEN pickup_latitude::NUMERIC BETWEEN 40.50 AND 40.65 AND pickup_longitude::NUMERIC BETWEEN -74.30 AND -74.00 THEN 1
+            WHEN pickup_latitude::NUMERIC BETWEEN 40.50 AND 40.65 AND pickup_longitude::NUMERIC BETWEEN -74.00 AND -73.85 THEN 2
+            WHEN pickup_latitude::NUMERIC BETWEEN 40.50 AND 40.65 AND pickup_longitude::NUMERIC BETWEEN -73.85 AND -73.70 THEN 3
+            WHEN pickup_latitude::NUMERIC BETWEEN 40.65 AND 40.75 AND pickup_longitude::NUMERIC BETWEEN -74.30 AND -74.00 THEN 4
+            WHEN pickup_latitude::NUMERIC BETWEEN 40.65 AND 40.75 AND pickup_longitude::NUMERIC BETWEEN -74.00 AND -73.85 THEN 5
+            WHEN pickup_latitude::NUMERIC BETWEEN 40.65 AND 40.75 AND pickup_longitude::NUMERIC BETWEEN -73.85 AND -73.70 THEN 6
+            WHEN pickup_latitude::NUMERIC BETWEEN 40.75 AND 40.90 AND pickup_longitude::NUMERIC BETWEEN -74.30 AND -74.00 THEN 7
+            WHEN pickup_latitude::NUMERIC BETWEEN 40.75 AND 40.90 AND pickup_longitude::NUMERIC BETWEEN -74.00 AND -73.85 THEN 8
+            WHEN pickup_latitude::NUMERIC BETWEEN 40.75 AND 40.90 AND pickup_longitude::NUMERIC BETWEEN -73.85 AND -73.70 THEN 9
+            ELSE 0
+        END                                            AS pickup_location_id
 
     FROM source
     WHERE
@@ -66,5 +80,8 @@ cleaned AS (
         AND passenger_count::INTEGER > 0
         AND ratecodeid::INTEGER != 99
         AND tpep_pickup_datetime::TIMESTAMP < tpep_dropoff_datetime::TIMESTAMP
+        AND payment_type::INTEGER in (1,2,3,4)
+        AND pickup_latitude::NUMERIC BETWEEN 40.5 AND 40.9
+        AND pickup_longitude::NUMERIC BETWEEN -74.3 AND -73.7
 )
 SELECT * FROM cleaned

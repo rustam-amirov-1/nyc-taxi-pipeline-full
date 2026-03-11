@@ -69,6 +69,27 @@ with DAG(
         ),
     )
 
+    dbt_dim_locations = BashOperator(
+    task_id="dbt_dim_locations",
+    bash_command=(
+        f"{DBT_ENV} dbt run "
+        f"--profiles-dir {DBT_PROFILES_DIR} "
+        f"--project-dir {DBT_PROJECT_DIR} "
+        f"--select dim_locations"
+    ),
+)
+
+
+    dbt_mart_top_zones = BashOperator(
+    task_id="dbt_mart_top_zones",
+    bash_command=(
+        f"{DBT_ENV} dbt run "
+        f"--profiles-dir {DBT_PROFILES_DIR} "
+        f"--project-dir {DBT_PROJECT_DIR} "
+        f"--select mart_top_zones"
+    ),
+)
+
     dbt_test_marts = BashOperator(
         task_id="dbt_test_marts",
         bash_command=(
@@ -84,4 +105,4 @@ with DAG(
         outlets=[gold_dataset],
     )
 
-    start >> dbt_seed >> dbt_fct_trips >> dbt_test_gold >> [dbt_mart_monthly, dbt_mart_payment]>> dbt_test_marts >>  end
+    start >> dbt_seed >> dbt_dim_locations >> dbt_fct_trips >> dbt_test_gold >> [dbt_mart_monthly, dbt_mart_payment, dbt_mart_top_zones] >> dbt_test_marts >> end

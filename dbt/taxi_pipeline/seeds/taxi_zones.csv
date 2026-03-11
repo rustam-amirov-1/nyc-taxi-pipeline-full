@@ -1,0 +1,10 @@
+location_id,zone_name,lat_min,lat_max,lon_min,lon_max
+1,South West,40.50,40.65,-74.30,-74.00
+2,South Central,40.50,40.65,-74.00,-73.85
+3,South East,40.50,40.65,-73.85,-73.70
+4,Central West,40.65,40.75,-74.30,-74.00
+5,Central,40.65,40.75,-74.00,-73.85
+6,Central East,40.65,40.75,-73.85,-73.70
+7,North West,40.75,40.90,-74.30,-74.00
+8,North Central,40.75,40.90,-74.00,-73.85
+9,North East,40.75,40.90,-73.85,-73.70
