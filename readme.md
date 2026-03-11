@@ -89,6 +89,9 @@ You can download it from Kaggle:
 https://www.kaggle.com/datasets/elemento/nyc-yellow-taxi-trip-data
 
 
+
+## Pipeline Architecture
+
 ```mermaid
 flowchart TD
     A([dag_start]) -->|Dataset: start_done| B

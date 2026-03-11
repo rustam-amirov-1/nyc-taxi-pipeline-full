@@ -49,13 +49,13 @@ with DAG(
             f"--project-dir {DBT_PROJECT_DIR} "
             f"--select stg_trips stg_payments"
         ),
-        trigger_rule=TriggerRule.ALL_DONE,
+        trigger_rule=TriggerRule.ALL_SUCCESS,
     )
 
     end = EmptyOperator(
         task_id="end",
         outlets=[silver_dataset],
-        trigger_rule=TriggerRule.ALL_DONE,
+        trigger_rule=TriggerRule.ALL_SUCCESS,
     )
 
     start >> [dbt_stg_trips, dbt_stg_payments] >> dbt_test_silver >> end
