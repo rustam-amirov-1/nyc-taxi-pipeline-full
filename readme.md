@@ -87,3 +87,39 @@ The DAG handles everything from ingestion through to the mart layer automaticall
 NYC Taxi 2015 dataset was used for this project.
 You can download it from Kaggle:
 https://www.kaggle.com/datasets/elemento/nyc-yellow-taxi-trip-data
+
+
+```mermaid
+flowchart TD
+    A([dag_start]) -->|Dataset: start_done| B
+
+    subgraph B[dag_bronze]
+        B1([start]) --> B2[load_to_bronze\nPySpark + JDBC] --> B3([end])
+    end
+
+    B -->|Dataset: bronze_done| C
+
+    subgraph C[dag_silver]
+        C1([start]) --> C2[dbt_stg_trips]
+        C1 --> C3[dbt_stg_payments]
+        C2 --> C4[dbt_test_silver]
+        C3 --> C4
+        C4 --> C5([end])
+    end
+
+    C -->|Dataset: silver_done| D
+
+    subgraph D[dag_gold]
+        D1([start]) --> D2[dbt_seed] --> D3[dbt_fct_trips] --> D4[dbt_test_gold] --> D5([end])
+    end
+
+    D -->|Dataset: gold_done| E
+
+    subgraph E[dag_end]
+        E1([start]) --> E2[dbt_mart_monthly_summary]
+        E1 --> E3[dbt_mart_payment_breakdown]
+        E2 --> E4[dbt_test_marts]
+        E3 --> E4
+        E4 --> E5([end])
+    end
+```
