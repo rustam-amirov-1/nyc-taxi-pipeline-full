@@ -49,9 +49,39 @@ with DAG(
         ),
     )
 
+    dbt_mart_monthly = BashOperator(
+        task_id="dbt_mart_monthly_summary",
+        bash_command=(
+            f"{DBT_ENV} dbt run "
+            f"--profiles-dir {DBT_PROFILES_DIR} "
+            f"--project-dir {DBT_PROJECT_DIR} "
+            f"--select mart_monthly_summary"
+        ),
+    )
+
+    dbt_mart_payment = BashOperator(
+        task_id="dbt_mart_payment_breakdown",
+        bash_command=(
+            f"{DBT_ENV} dbt run "
+            f"--profiles-dir {DBT_PROFILES_DIR} "
+            f"--project-dir {DBT_PROJECT_DIR} "
+            f"--select mart_payment_breakdown"
+        ),
+    )
+
+    dbt_test_marts = BashOperator(
+        task_id="dbt_test_marts",
+        bash_command=(
+            f"{DBT_ENV} dbt test "
+            f"--profiles-dir {DBT_PROFILES_DIR} "
+            f"--project-dir {DBT_PROJECT_DIR} "
+            f"--select mart_monthly_summary mart_payment_breakdown"
+        ),
+    )
+
     end = EmptyOperator(
         task_id="end",
         outlets=[gold_dataset],
     )
 
-    start >> dbt_seed >> dbt_fct_trips >> dbt_test_gold >> end
+    start >> dbt_seed >> dbt_fct_trips >> dbt_test_gold >> [dbt_mart_monthly, dbt_mart_payment]>> dbt_test_marts >>  end
