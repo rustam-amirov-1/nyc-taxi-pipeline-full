@@ -8,24 +8,13 @@ import os
 from dotenv import load_dotenv
 import urllib.request
 
-load_dotenv()
-
 start_dataset  = Dataset("nyc-taxi-pipeline/start_done")
 bronze_dataset = Dataset("nyc-taxi-pipeline/bronze_done")
 
 CSV_FILE_PATH = "/opt/airflow/data/raw/yellow_tripdata_sample_1000.csv"
 JDBC_JAR_PATH = "/opt/airflow/drivers/postgresql-42.7.1.jar"
+JDBC_JAR_URL  = "https://jdbc.postgresql.org/download/postgresql-42.7.1.jar"
 TARGET_TABLE  = "raw.taxi_trips"
-
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_NAME = os.getenv("DB_NAME")
-DB_USER = os.getenv("DB_USER")
-DB_PASS = os.getenv("DB_PASS")
-
-JDBC_URL = f"jdbc:postgresql://{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
-JDBC_JAR_URL = "https://jdbc.postgresql.org/download/postgresql-42.7.1.jar"
 
 def download_jar():
     os.makedirs(os.path.dirname(JDBC_JAR_PATH), exist_ok=True)
@@ -36,8 +25,16 @@ def download_jar():
     else:
         print("JDBC jar already exists, skipping download.")
 
-
 def load_to_bronze():
+    load_dotenv("/opt/airflow/.env")
+
+    db_host = os.getenv("DB_HOST")
+    db_port = os.getenv("DB_PORT")
+    db_name = os.getenv("DB_NAME")
+    db_user = os.getenv("DB_USER")
+    db_pass = os.getenv("DB_PASS")
+    jdbc_url = f"jdbc:postgresql://{db_host}:{db_port}/{db_name}"
+
     download_jar()
 
     spark = SparkSession.builder \
@@ -56,13 +53,13 @@ def load_to_bronze():
 
     df.write \
         .format("jdbc") \
-        .option("url", JDBC_URL) \
+        .option("url", jdbc_url) \
         .option("dbtable", TARGET_TABLE) \
-        .option("user", DB_USER) \
-        .option("password", DB_PASS) \
+        .option("user", db_user) \
+        .option("password", db_pass) \
         .option("driver", "org.postgresql.Driver") \
         .mode("overwrite") \
-        .option("truncate","true") \
+        .option("truncate", "true") \
         .save()
 
     print(f"Bronze load complete: {df.count()} rows loaded into {TARGET_TABLE}")
